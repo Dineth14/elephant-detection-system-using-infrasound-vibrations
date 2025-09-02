@@ -1,0 +1,12 @@
+# ESP32 Elephant Detection System - Enhanced Modern Edition
+# Python dependencies for the modern GUI
+
+# Core dependencies
+numpy<2.0
+matplotlib==3.7.2
+pyserial==3.5
+
+# Optional dependencies for enhanced features
+# tkinter (included with Python standard library)
+# threading (included with Python standard library)
+# queue (included with Python standard library)
