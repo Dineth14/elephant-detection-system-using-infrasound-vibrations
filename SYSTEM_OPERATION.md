@@ -74,7 +74,7 @@ float AudioProcessor::apply_low_pass_filter(float input) {
 }
 ```
 
-**Enhancement Note:** High-pass filter removed to preserve elephant infrasound (0-20Hz) and low-frequency vocalizations critical for accurate detection.
+**Note:** High-pass filter removed to preserve elephant infrasound (0-20Hz) and low-frequency vocalizations critical for accurate detection.
 
 ## 4. Feature Extraction Process
 
@@ -144,11 +144,6 @@ void SerialProtocol::send_classification_result(const AudioFeatures& features, c
     Serial.print(classification); Serial.print(",");
     Serial.println(confidence, 3);
 }
-```
-
-### Command Processing
-```cpp
-// ...existing code for command handling...
 ```
 
 ## 7. Python GUI Integration
