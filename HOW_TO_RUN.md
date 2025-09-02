@@ -94,7 +94,7 @@ python system_test.py
 - **Labeling**: Train the system with "elephant"/"not_elephant" labels
 - **Storage**: Data saved to ESP32 flash memory
 - **Export**: Retrieve training data via serial
-- **Enhanced Features**: Now includes true infrasound (0-20Hz) for better accuracy
+- **Advanced Features**: Now includes true infrasound (0-20Hz) for better accuracy
 
 ---
 
@@ -177,11 +177,11 @@ ESP32-Elephant-Detection/
 ├── python_gui/              # GUI source code
 │   ├── noise_logger_gui.py  # Main GUI application
 │   └── retrieve_esp32_dataset.py
-└── esp32_firmware/          # ESP32 firmware (Enhanced)
+└── esp32_firmware/          # ESP32 firmware
     ├── platformio.ini       # Build configuration
     ├── src/main.cpp         # Main firmware
     └── lib/                 # Audio processing libraries
-        ├── AudioProcessor/  # Enhanced: No high-pass filter
+        ├── AudioProcessor/  # Optimized: No high-pass filter
         ├── KNNClassifier/   # Machine learning
         └── SerialProtocol/  # Communication
 ```
@@ -196,22 +196,22 @@ When everything is working correctly:
 2. **Setup**: `setup.bat` completes without errors
 3. **Test**: `system_test.py` shows "SUCCESS - All tests passed!"
 4. **GUI**: Window opens with elephant detection interface
-5. **Enhanced Audio**: System now preserves 0-200Hz range for better elephant detection
+5. **Optimized Audio**: System now preserves 0-200Hz range for better elephant detection
 6. **Real-time Updates**: Connect to COM10 in GUI to see live audio features
 
 ---
 
 ## 🎉 Ready to Use!
 
-Your Enhanced ESP32 Elephant Detection System is now ready for:
+Your ESP32 Elephant Detection System is now ready for:
 - **One-click deployment** with `auto_run.bat`
 - **Improved elephant detection** with full infrasound preservation (0-200Hz)
 - **Software testing** with simulated data
 - **Hardware testing** with real ESP32 and microphone  
-- **Field deployment** for enhanced elephant monitoring
+- **Field deployment** for professional elephant monitoring
 
 ### Key Improvements ✨
 - **Automated firmware upload**: No manual PlatformIO required
-- **Enhanced audio processing**: Preserves critical elephant infrasound (0-80Hz)
+- **Optimized audio processing**: Preserves critical elephant infrasound (0-80Hz)
 - **Better detection accuracy**: Full frequency range optimization
 - **Streamlined workflow**: Double-click to deploy and run

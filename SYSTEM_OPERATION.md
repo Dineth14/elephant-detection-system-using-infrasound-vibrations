@@ -7,7 +7,7 @@
 
 ## System Overview
 
-The ESP32 Elephant Logger is a real-time audio classification system for detecting elephant rumbles and calls. It uses optimized low-frequency digital filtering, extracts elephant-specific features, and classifies sounds as "elephant" or "not_elephant" using a k-NN algorithm. The system is designed for robust field deployment and real-time monitoring with enhanced elephant sensitivity.
+The ESP32 Elephant Logger is a real-time audio classification system for detecting elephant rumbles and calls. It uses optimized low-frequency digital filtering, extracts elephant-specific features, and classifies sounds as "elephant" or "not_elephant" using a k-NN algorithm. The system is designed for robust field deployment and real-time monitoring with improved elephant sensitivity.
 
 ## 1. Audio Sample Capture
 
@@ -62,7 +62,7 @@ void AudioProcessor::add_sample(int16_t sample) {
 
 ## 3. Digital Signal Processing
 
-### Single-Stage Optimized Filtering (Enhanced for Elephants)
+### Single-Stage Optimized Filtering (Specialized for Elephants)
 
 #### Low-Pass Filter Only (200 Hz cutoff)
 ```cpp

@@ -37,7 +37,7 @@
 - **Update Rate**: Every 256 ms for classification
 
 ### Frequency Band Analysis
-Frequency bands for elephant detection (Enhanced Range):
+Frequency bands for elephant detection (Optimized Range):
 - **True Infrasound Band**: 0–20 Hz (deepest elephant rumbles, now preserved)
 - **Extended Infrasound Band**: 20–40 Hz (elephant rumbles and calls)
 - **Low Band**: 40–100 Hz (low-frequency harmonics)
@@ -64,7 +64,7 @@ Digital filter coefficients calculated as:
 
 #
 #### Quality Metrics
-- **Signal-to-Noise Ratio**: Enhanced by preserving elephant infrasound while filtering high-frequency noise
+- **Signal-to-Noise Ratio**: Improved by preserving elephant infrasound while filtering high-frequency noise
 - **Frequency Resolution**: 1000/256 ≈ 3.9 Hz per bin
 - **Dynamic Range**: 12-bit ADC (72 dB theoretical)
 - **Elephant Sensitivity**: Improved by preserving 0-80Hz range critical for detection
@@ -118,11 +118,11 @@ private:
 - Frequency response: Flat within ±1dB from 0–200 Hz (full elephant range preserved)
 - THD+N: <1% for 50 Hz test tone
 - Dynamic range: >60dB practical range
-- Infrasound sensitivity: Enhanced by removing high-pass filter
+- Infrasound sensitivity: Improved by removing high-pass filter
 
 ## Feature Extraction (Elephant Logger)
 
-### Extracted Features (Enhanced for Elephant Detection)
+### Extracted Features (Optimized for Elephant Detection)
 - **RMS Energy** (Full range 0-200Hz)
 - **Spectral Centroid** (Full range 0-200Hz)
 - **True Infrasound Band Energy (0–20 Hz)** - *NEW: Now preserved*
@@ -131,7 +131,7 @@ private:
 - **Mid Band Energy (100–200 Hz)**
 - **Dominant Frequency** (Full range 0-200Hz)
 - **Temporal Envelope**
-- **Spectral Flux** (Enhanced sensitivity)
+- **Spectral Flux** (Improved sensitivity)
 
 ## Classification
 - **Type**: k-Nearest Neighbors (k-NN)
