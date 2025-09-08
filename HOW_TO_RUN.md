@@ -7,30 +7,25 @@
 
 ## 🚀 Quick Start
 
+
 ### Option 1: Fully Automated (Recommended) ⚡
 1. **Double-click `auto_run.bat`**
-   - Automatically uploads ESP32 firmware via PlatformIO
-   - Launches GUI application
-   - Complete system ready in ~15 seconds
+  - Automatically uploads ESP32 firmware via PlatformIO
+  - Launches GUI application
+  - Complete system ready in ~15 seconds
 
 ### Option 2: Manual Steps
 1. **Setup**: Double-click `setup.bat`
-   - Creates Python virtual environment
-   - Installs all required dependencies
+  - Creates Python virtual environment
+  - Installs all required dependencies
 2. **Run**: Double-click `run_gui.bat`
-   - Launches the GUI application (firmware upload required separately)
+  - Launches the GUI application (firmware upload required separately)
+
 ```bash
 # Manual setup if needed
-# Create virtual environment
 python -m venv .venv
-
-# Activate environment (Windows)
 .venv\Scripts\activate
-
-# Install dependencies
 pip install -r requirements.txt
-
-# Run GUI (firmware must be uploaded separately)
 python python_gui/noise_logger_gui.py
 ```
 
@@ -38,41 +33,34 @@ python python_gui/noise_logger_gui.py
 
 ## � System Components
 
+
 ### Core Files
 - **`auto_run.bat`** - Complete automated system (firmware + GUI) ⚡
-- **`setup.bat`** - One-time environment setup
-- **`run_gui.bat`** - GUI launcher only
-- **`system_test.py`** - System validation
-- **`simulate_esp32.py`** - Hardware simulation for testing
+- **`tests/system_test.py`** - System validation
 
 ### Testing Without Hardware
 ```bash
 # Test the system (use virtual environment)
-.venv\Scripts\python.exe system_test.py
+.venv\Scripts\python.exe tests/system_test.py
 
-# Run with simulated ESP32 data
-.venv\Scripts\python.exe simulate_esp32.py
+# Test ESP32 communication (hardware required)
+.venv\Scripts\python.exe tests/test_esp32_direct.py
 
 # Or use global Python (after manual pip install)
-python system_test.py
+python tests/system_test.py
 ```
 
 ---
 
 ## 🔧 ESP32 Hardware Setup
 
-### Automated Firmware Upload (Recommended)
+### Automated Firmware Upload 
 1. **Connect ESP32 via USB**
 2. **Double-click `auto_run.bat`**
    - Automatically compiles and uploads firmware
    - Launches GUI when ready
    - Shows upload progress and completion
 
-### Manual Firmware Upload
-1. Open `esp32_firmware` folder in VS Code with PlatformIO
-2. Connect ESP32 via USB
-3. Upload firmware using PlatformIO: `pio run --target upload`
-4. Run GUI separately with `run_gui.bat`
 
 ### Hardware Connections
 - **Microphone**: GPIO34 (analog input)
@@ -98,11 +86,12 @@ python system_test.py
 
 ---
 
+
 ## 📊 System Verification
 
 Run the test suite to verify everything works:
 ```bash
-python system_test.py
+python tests/system_test.py
 ```
 
 Expected output:
@@ -141,7 +130,7 @@ Testing GUI creation...
 **ESP32 not detected**
 - Check USB cable and drivers
 - Use Windows Device Manager to find COM port
-- Test with `python test_esp32_direct.py`
+- Test with `python tests/test_esp32_direct.py`
 - **Try automated system**: `auto_run.bat` handles firmware upload automatically
 
 **Automated upload fails**
@@ -152,13 +141,10 @@ Testing GUI creation...
 ### Validation Commands
 ```bash
 # Test system components (use virtual environment)
-.venv\Scripts\python.exe system_test.py
+.venv\Scripts\python.exe tests/system_test.py
 
 # Test ESP32 communication (hardware required)
-.venv\Scripts\python.exe test_esp32_direct.py
-
-# Test without hardware
-.venv\Scripts\python.exe simulate_esp32.py
+.venv\Scripts\python.exe tests/test_esp32_direct.py
 ```
 
 ---
@@ -168,11 +154,9 @@ Testing GUI creation...
 ```
 ESP32-Elephant-Detection/
 ├── auto_run.bat             # Complete automated system ⚡
-├── setup.bat                # Environment setup
-├── run_gui.bat              # GUI launcher only
-├── system_test.py           # System test
-├── simulate_esp32.py        # Hardware simulation
-├── test_esp32_direct.py     # Hardware test
+├── tests/                   # All test scripts
+│   ├── system_test.py       # System test
+│   └── test_esp32_direct.py # Hardware test
 ├── requirements.txt         # Dependencies
 ├── python_gui/              # GUI source code
 │   ├── noise_logger_gui.py  # Main GUI application

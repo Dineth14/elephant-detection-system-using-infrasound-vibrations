@@ -17,17 +17,9 @@ This advanced system detects elephant rumbles and calls using sophisticated low-
 
 ## 🎯 Key Features
 
-### 🚀 Modern Professional Interface
-- **GitHub-Inspired Dark Theme**: Contemporary visual design with professional color scheme
-- **3-Column Smart Layout**: Optimized space utilization (2:2:1 ratio)
-- **Modern Card-Based Design**: Clean separation of functional areas with subtle shadows
-- **Modern Typography**: Segoe UI font family for modern appearance
-- **Real-time Status Bar**: Performance metrics and system status
-- **66 FPS Performance**: Ultra-responsive real-time updates (15ms intervals)
-
 ### � Advanced Audio Processing
 - **Real-time Audio Processing**: 1kHz sampling, 256-sample frames (256ms windows)
-- **Low-Frequency Digital Filtering**: 10Hz high-pass and 200Hz low-pass filters
+- **Low-Frequency Digital Filtering**: 200Hz low-pass filters
 - **8D Feature Extraction**: Comprehensive acoustic analysis with color-coded visualization
 - **Offline Machine Learning**: k-NN classifier runs entirely on ESP32
 - **Live Binary Classification**: Instant "elephant" or "not_elephant" detection with confidence
@@ -61,6 +53,7 @@ This advanced system detects elephant rumbles and calls using sophisticated low-
 
 ## 🚀 Quick Start
 
+
 ### Automated Deployment (Recommended) ⚡
 1. **Connect ESP32 via USB**
 2. **Double-click `auto_run.bat`**
@@ -68,20 +61,16 @@ This advanced system detects elephant rumbles and calls using sophisticated low-
    - Launches professional GUI
    - Complete system ready in ~15 seconds
 
-### Manual Setup
-1. **Setup Environment**: Run `setup.bat`
-2. **Upload Firmware**: Use PlatformIO or automated script
-3. **Launch GUI**: Run `run_gui.bat`
-
 ### ESP32 Firmware
 - **Audio Capture**: 1kHz sampling from analog microphone (GPIO34)
-- **Optimized Digital Filtering**: 200Hz low-pass filter (high-pass removed for elephant sensitivity)
+- **Optimized Digital Filtering**: 200Hz low-pass filter 
 - **DC Offset Removal**: Adaptive learning from first 2000 samples
 - **Advanced Feature Extraction**: RMS, Spectral Centroid, True Infrasound Energy (0–20Hz), Extended Infrasound (20–40Hz), Low Band Energy (40–100Hz), Mid Band Energy (100–200Hz), Dominant Frequency, Temporal Envelope, Spectral Flux
 - **Full Range FFT Processing**: 128 frequency bins covering complete 0–500Hz range
 - **Classification**: Offline k-NN classifier with incremental learning
 - **Storage**: Persistent dataset storage on ESP32 SPIFFS flash
 - **Communication**: Serial protocol for real-time GUI interaction
+
 
 ### Python GUI
 - **Smart ESP32 Detection**: Hardware-based identification with VID/PID matching
@@ -104,12 +93,14 @@ This advanced system detects elephant rumbles and calls using sophisticated low-
 9. **Spectral Flux**: Rate of change in spectral content (improved sensitivity)
 
 
+
 ### Real-time Classification (Improved Accuracy)
 
 Once you have labeled samples:
 - The system will automatically classify incoming audio as "elephant" or "not_elephant"
 - Classifications appear in real-time with confidence scores
 - Feature plots show the evolution of low-frequency audio characteristics
+
 
 ### Serial Protocol (ESP32 → GUI)
 - `FEATURES:rms,centroid,infra,low_band,mid_band,dom_freq,envelope,flux,label,confidence`
@@ -119,19 +110,37 @@ Once you have labeled samples:
 - `OK:message` - Success confirmation
 - `ERROR:message` - Error notification
 
+
+## 📁 Project Structure
+
+```
+ESP32-Elephant-Detection/
+├── auto_run.bat             # Complete automated system ⚡
+├── requirements.txt         # Dependencies
+├── python_gui/              # GUI source code
+│   ├── noise_logger_gui.py  # Main GUI application
+│   └── retrieve_esp32_dataset.py
+├── tests/                   # All test scripts
+│   ├── system_test.py       # System test
+│   └── test_esp32_direct.py # Hardware test
+└── esp32_firmware/          # ESP32 firmware
+   ├── platformio.ini       # Build configuration
+   ├── src/main.cpp         # Main firmware
+   └── lib/                 # Audio processing libraries
+      ├── AudioProcessor/  # Optimized: No high-pass filter
+      ├── KNNClassifier/   # Machine learning
+      └── SerialProtocol/  # Communication
+```
+
 ## 🎉 System Ready!
 
-Your optimized ESP32 Elephant Detection System now features:
+ESP32 Elephant Detection System now features:
 - **🚀 One-click deployment** with `auto_run.bat`
 - **🔊 Advanced elephant detection** with full infrasound preservation (0-200Hz)
 - **⚡ Automated firmware upload** - no manual PlatformIO required
 - **🎯 Improved accuracy** with optimized audio processing
 - **🎨 Modern professional GUI** with GitHub-inspired design
 
-### Key Improvements ✨
-- **True infrasound detection**: 0-20Hz range now fully preserved
-- **Improved low-frequency sensitivity**: Critical for elephant detection
-- **Streamlined deployment**: Double-click to upload and run
-- **Optimized signal processing**: Better sensitivity, less noise
+
 
 **Ready for field deployment with superior elephant detection capabilities!**
