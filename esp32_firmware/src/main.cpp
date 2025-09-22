@@ -35,9 +35,11 @@ void process_audio_frame();
 
 void setup() {
     Serial.begin(115200);
-    delay(1000);
+    delay(2000); // Initial delay for power stabilization
     
-    Serial.println("ESP32 Elephant Logger Starting...");
+    Serial.println("ESP32 Elephant Logger Starting (USB-Only Mode)...");
+    Serial.println("🔌 USB connectivity enabled, Bluetooth disabled");
+    Serial.flush();
     
     // Initialize SPIFFS
     if (!SPIFFS.begin(true)) {
@@ -45,9 +47,9 @@ void setup() {
         return;
     }
     
-    // Initialize audio processor
+    // Initialize audio processor with improved feature extraction
     audio_processor.initialize();
-    Serial.println("Audio processor initialized (1kHz, 256-sample frames, 10–200Hz focus)");
+    Serial.println("Audio processor initialized (1kHz, 256-sample frames, enhanced frequency detection)");
     
     // Initialize classifier
     classifier.initialize();
@@ -63,10 +65,12 @@ void setup() {
     // Initialize serial protocol
     serial_protocol.initialize();
     
+    Serial.println("ESP32_NOISE_LOGGER_READY");
+    
     // Initialize audio input
     init_analog_microphone();
     
-    Serial.println("Setup complete - ready for operation");
+    Serial.println("Setup complete - ready for operation (USB-only)");
 }
 
 void loop() {
@@ -104,53 +108,66 @@ void init_analog_microphone() {
     Serial.println("- 12-bit resolution (0-4095)");
     Serial.println("- 11dB attenuation (0-3.3V range)");
     Serial.println("- 1kHz sampling rate (1ms intervals)");
+    Serial.println("- Enhanced frequency detection (10-200Hz optimized)");
 }
 
 void read_analog_samples() {
     static unsigned long last_sample_time = 0;
-    static int16_t dc_offset = 2048;  // Track DC offset for capacitor mic
-    static int sample_count = 0;
     
-    unsigned long sample_interval = 1000000 / SAMPLE_RATE;  // microseconds between samples
-    
-    if (micros() - last_sample_time >= sample_interval) {
-        int analog_value = analogRead(MIC_PIN);
+    // Sample at exactly 1kHz (1ms intervals)
+    if (millis() - last_sample_time >= 1) {
+        last_sample_time = millis();
         
-        // Simple DC offset removal for capacitor microphone
-        if (sample_count < 1000) {
-            // Learn DC offset during first 1000 samples
-            dc_offset = (dc_offset * 9 + analog_value) / 10;  // Simple moving average
-            sample_count++;
-        }
+        // Read ADC value
+        int raw_value = analogRead(MIC_PIN);
         
-        // Remove DC offset and convert to signed 16-bit
-        int16_t sample = (analog_value - dc_offset) * 4;  // Moderate scaling
+        // Convert to voltage (0-3.3V range with 12-bit ADC)
+        float voltage = (raw_value * 3.3) / 4095.0;
+        
+        // Convert to signed 16-bit for audio processing
+        // Center around 0 (assuming 1.65V DC bias)
+        int16_t sample = (int16_t)((voltage - 1.65) * 10000);  // Scale for processing
         
         // Add sample to audio processor
         audio_processor.add_sample(sample);
-        last_sample_time = micros();
     }
 }
 
 void process_audio_frame() {
-    if (millis() - last_classification_time > CLASSIFICATION_INTERVAL) {
-        AudioFeatures features;
+    static unsigned long last_feature_time = 0;
+    const unsigned long FEATURE_INTERVAL = 800;  // Send features every 800ms (1.25 Hz)
+    
+    AudioFeatures features;
+    
+    // Extract features if frame is ready
+    if (audio_processor.extract_features(features)) {
+        // Store features globally
+        last_features = features;
+        has_new_features = true;
         
-        if (audio_processor.extract_features(features)) {
-            // Classify the features
-            float confidence;
-            String classification = classifier.classify(features, confidence);
+        // Rate limit the feature transmission
+        if (millis() - last_feature_time >= FEATURE_INTERVAL) {
+            // Send features via USB (features only)
+            serial_protocol.send_features(features);
             
-            // Update global variables for serial communication
-            last_features = features;
+            // Perform classification
+            String classification = classifier.classify(features, last_confidence);
+            
+            // Ensure we have a valid classification
+            if (classification.length() == 0) {
+                classification = "not_elephant";  // Fallback
+            }
+            
             last_classification = classification;
-            last_confidence = confidence;
-            has_new_features = true;
-
-            // Send results via serial
-            serial_protocol.send_classification_result(features, classification, confidence);
-
             last_classification_time = millis();
+            
+            // Send classification result via USB (separate message)
+            serial_protocol.send_classification(features, classification, last_confidence);
+            
+            last_feature_time = millis();
         }
+        
+        // Reset audio buffer for next frame
+        audio_processor.reset_buffer();
     }
 }
