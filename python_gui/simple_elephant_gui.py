@@ -35,6 +35,12 @@ class SimpleElephantGUI:
         self.current_confidence = 0.0
         self.feature_history = []
         
+        # Detection display timer (5-second intervals)
+        self.detection_timer_start = 0
+        self.detection_timer_duration = 5.0  # 5 seconds
+        self.last_detection_state = "no_elephant"
+        self.detection_locked = False
+        
         # GUI setup
         self.setup_ui()
         self.start_data_thread()
@@ -135,6 +141,14 @@ class SimpleElephantGUI:
         self.confidence_label = tk.Label(details_frame, text="Confidence: --%", 
                                         font=('Arial', 12), fg='white', bg='#2b2b2b')
         self.confidence_label.pack(side='right')
+        
+        # Detection timer display
+        timer_frame = tk.Frame(detect_frame, bg='#2b2b2b')
+        timer_frame.pack(fill='x', padx=20, pady=5)
+        
+        self.timer_label = tk.Label(timer_frame, text="", 
+                                   font=('Arial', 10), fg='#FFD700', bg='#2b2b2b')
+        self.timer_label.pack()
     
     def setup_features_panel(self, parent):
         """Setup audio features display"""
@@ -212,6 +226,13 @@ class SimpleElephantGUI:
                                   font=('Arial', 10, 'bold'), bg='#f44336', fg='white',
                                   padx=15, pady=5, state='disabled')
         self.clear_btn.pack(side='left', padx=5)
+        
+        # Test button for debugging
+        self.test_btn = tk.Button(btn_frame, text="🧪 Test Detection", 
+                                 command=self.test_elephant_detection,
+                                 font=('Arial', 10, 'bold'), bg='#FF5722', fg='white',
+                                 padx=15, pady=5)
+        self.test_btn.pack(side='left', padx=5)
     
     def setup_status_panel(self, parent):
         """Setup status information"""
@@ -355,6 +376,9 @@ class SimpleElephantGUI:
         # Schedule next processing
         if self.running:
             self.root.after(50, self.process_data_queue)
+            # Also update detection display for timer countdown
+            if self.detection_locked:
+                self.update_detection_display()
     
     def process_serial_line(self, line):
         """Process a line of data from ESP32"""
@@ -398,13 +422,18 @@ class SimpleElephantGUI:
     def parse_classification(self, line):
         """Parse classification data"""
         try:
-            parts = line[14:].split(",")  # Remove "CLASSIFICATION:" prefix
-            if len(parts) >= 3:
-                self.current_classification = parts[0]
-                self.current_confidence = float(parts[1])
+            parts = line[15:].split(",")  # Remove "CLASSIFICATION:" prefix (15 chars)
+            self.log_message(f"🔍 DEBUG: Classification line: '{line}', Parts: {parts}")
+            
+            if len(parts) >= 2:  # Changed from >= 3 to >= 2
+                self.current_classification = parts[0].strip()
+                self.current_confidence = float(parts[1].strip())
+                self.log_message(f"📊 Classification: {self.current_classification}, Confidence: {self.current_confidence}")
                 self.update_detection_display()
+            else:
+                self.log_message(f"⚠️ Invalid classification format: {line}")
         except Exception as e:
-            self.log_message(f"❌ Classification parsing error: {str(e)}")
+            self.log_message(f"❌ Classification parsing error: {str(e)} for line: {line}")
     
     def parse_status(self, line):
         """Parse status data"""
@@ -433,24 +462,71 @@ class SimpleElephantGUI:
                     label.config(text=f"{value:.4f}")
     
     def update_detection_display(self):
-        """Update the detection display"""
+        """Update the detection display with 5-second persistence"""
+        current_time = time.time()
+        
+        # Determine current detection state
         if self.current_classification == "elephant":
-            if self.current_confidence > 0.8:
+            if self.current_confidence > 0.5:  # Lowered threshold for better detection
+                new_detection_state = "elephant_high"
+            elif self.current_confidence > 0.3:
+                new_detection_state = "elephant_medium"
+            else:
+                new_detection_state = "elephant_low"
+        else:
+            new_detection_state = "no_elephant"
+        
+        # Check if we need to start a new 5-second detection period
+        if new_detection_state != "no_elephant" and (not self.detection_locked or 
+            new_detection_state != self.last_detection_state):
+            # Start new 5-second detection period
+            self.detection_timer_start = current_time
+            self.detection_locked = True
+            self.last_detection_state = new_detection_state
+            
+            if new_detection_state == "elephant_high":
                 self.detection_label.config(text="🐘 ELEPHANT DETECTED! 🚨", 
                                           bg='#f44336', fg='white')
                 self.root.bell()  # Sound alert
-            elif self.current_confidence > 0.6:
+            elif new_detection_state == "elephant_medium":
                 self.detection_label.config(text="🐘 Possible Elephant", 
                                           bg='#FF9800', fg='white')
             else:
                 self.detection_label.config(text="🤔 Elephant (Low Confidence)", 
                                           bg='#607D8B', fg='white')
-        else:
+        
+        # Check if 5-second period has elapsed
+        elif self.detection_locked:
+            elapsed = current_time - self.detection_timer_start
+            if elapsed >= self.detection_timer_duration:
+                # 5-second period finished, check current state
+                self.detection_locked = False
+                if new_detection_state == "no_elephant":
+                    self.detection_label.config(text="✅ No Elephant", 
+                                              bg='#4CAF50', fg='white')
+                    self.last_detection_state = "no_elephant"
+                else:
+                    # Continue with current detection if still active
+                    self.detection_timer_start = current_time
+                    self.detection_locked = True
+                    self.last_detection_state = new_detection_state
+        
+        # If no detection lock, show current state immediately
+        elif not self.detection_locked and new_detection_state == "no_elephant":
             self.detection_label.config(text="✅ No Elephant", 
                                       bg='#4CAF50', fg='white')
+            self.last_detection_state = "no_elephant"
         
+        # Update classification labels
         self.classification_label.config(text=f"Classification: {self.current_classification}")
         self.confidence_label.config(text=f"Confidence: {self.current_confidence*100:.1f}%")
+        
+        # Update timer display
+        if self.detection_locked and self.last_detection_state != "no_elephant":
+            remaining = max(0, self.detection_timer_duration - (current_time - self.detection_timer_start))
+            self.timer_label.config(text=f"Detection active: {remaining:.1f}s remaining")
+        else:
+            self.timer_label.config(text="")
     
     def send_label(self, label):
         """Send label to ESP32"""
@@ -483,6 +559,20 @@ class SimpleElephantGUI:
     def start_data_thread(self):
         """Start data processing thread"""
         self.process_data_queue()
+    
+    def test_elephant_detection(self):
+        """Test elephant detection visual by simulating ESP32 data"""
+        self.log_message("🧪 Testing elephant detection visual...")
+        
+        # Simulate receiving classification data from ESP32
+        test_line = "CLASSIFICATION:elephant,0.85,high_confidence"
+        self.log_message(f"📡 Simulating ESP32 data: {test_line}")
+        self.parse_classification(test_line)
+        
+        # Also test some features
+        feature_line = "FEATURES:0.05,0.8,0.12,0.08,85.2,95.1,0.15,0.22"
+        self.log_message(f"📡 Simulating features: {feature_line}")
+        self.parse_features(feature_line)
     
     def on_closing(self):
         """Handle window closing"""

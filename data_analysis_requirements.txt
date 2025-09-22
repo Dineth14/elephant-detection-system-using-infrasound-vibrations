@@ -1,0 +1,23 @@
+# Data Analysis Tool Requirements
+# ===============================
+# Additional packages needed for the data analysis tool
+
+# Core data analysis
+pandas>=1.3.0
+numpy>=1.21.0
+
+# Visualization
+matplotlib>=3.5.0
+seaborn>=0.11.0
+
+# Machine learning
+scikit-learn>=1.0.0
+
+# Statistical analysis
+scipy>=1.7.0
+
+# Optional: For advanced 3D plotting
+# mpl_toolkits (included in matplotlib)
+
+# Note: These are in addition to the main requirements.txt
+# Run: pip install -r data_analysis_requirements.txt
