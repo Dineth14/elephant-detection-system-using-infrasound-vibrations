@@ -1,4 +1,3 @@
-#!/usr/bin/env python3
 """
 Advanced Elephant Detection GUI
 A sophisticated interface with real-time visualization, data analysis, and machine learning features
@@ -53,6 +52,8 @@ class AdvancedElephantGUI:
         # Statistics
         self.stats = {
             'total_samples': 0,
+            'elephant_samples': 0,
+            'other_samples': 0,
             'elephant_detections': 0,
             'accuracy': 0.0,
             'session_start': time.time()
@@ -138,8 +139,8 @@ class AdvancedElephantGUI:
                                    font=('Arial', 10, 'bold'), fg='white', bg='#2b2b2b')
         stats_frame.pack(side='right', fill='x', expand=True, padx=(5, 0))
         
-        self.stats_label = tk.Label(stats_frame, text="Samples: 0 | Detections: 0 | Accuracy: 0%", 
-                                   font=('Arial', 10), fg='white', bg='#2b2b2b')
+        self.stats_label = tk.Label(stats_frame, text="Session Labels - Elephant: 0 | Other: 0 | Live Detections: 0 | ESP32 Stored: 0", 
+                                   font=('Arial', 9), fg='white', bg='#2b2b2b', wraplength=600)
         self.stats_label.pack(pady=3)
         
         # Middle row - Detection and Features (side by side)
@@ -620,6 +621,16 @@ class AdvancedElephantGUI:
             if len(parts) >= 2:  # Changed from >= 3 to >= 2
                 self.current_classification = parts[0].strip()
                 self.current_confidence = float(parts[1].strip())
+                
+                # Track sample counts based on classification
+                if self.current_classification.lower() == 'elephant':
+                    self.stats['elephant_samples'] += 1
+                else:
+                    self.stats['other_samples'] += 1
+                
+                # Update statistics display
+                self.update_statistics()
+                
                 self.log_message(f"📊 Classification: {self.current_classification}, Confidence: {self.current_confidence}")
                 self.update_detection_display()
             else:
@@ -656,13 +667,8 @@ class AdvancedElephantGUI:
         current_time = time.time()
         
         # Determine current detection state
-        if self.current_classification == "elephant":
-            if self.current_confidence > 0.5:  # Lowered threshold for better detection
-                new_detection_state = "elephant_high"
-            elif self.current_confidence > 0.3:
-                new_detection_state = "elephant_medium"
-            else:
-                new_detection_state = "elephant_low"
+        if self.current_classification == "elephant" and self.current_confidence == 1.0:
+            new_detection_state = "elephant_high"
         else:
             new_detection_state = "no_elephant"
         
@@ -743,10 +749,15 @@ class AdvancedElephantGUI:
     
     def update_statistics(self):
         """Update statistics display"""
-        accuracy = (self.stats['elephant_detections'] / max(self.stats['total_samples'], 1)) * 100
+        total_samples = self.stats['elephant_samples'] + self.stats['other_samples']
+        if total_samples > 0:
+            accuracy = (self.stats['elephant_samples'] / total_samples) * 100
+        else:
+            accuracy = 0.0
         self.stats['accuracy'] = accuracy
         
-        stats_text = f"Samples: {self.stats['total_samples']} | Detections: {self.stats['elephant_detections']} | Accuracy: {accuracy:.1f}%"
+        stored_samples = self.stats.get('total_samples', 0)
+        stats_text = f"Session Labels - Elephant: {self.stats['elephant_samples']} | Other: {self.stats['other_samples']} | Live Detections: {self.stats['elephant_detections']} | ESP32 Stored: {stored_samples}"
         self.stats_label.config(text=stats_text)
     
     def start_labeling(self, label):

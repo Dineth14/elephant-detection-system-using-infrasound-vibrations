@@ -15,7 +15,8 @@
 - [🛠️ Development](#️-development)
 - [📁 Project Structure](#-project-structure)
 - [🔬 Scientific Basis](#-scientific-basis)
-- [🐛 Troubleshooting](#-troubleshooting)
+- [� Additional Documentation](#-additional-documentation)
+- [�🐛 Troubleshooting](#-troubleshooting)
 - [📄 License](#-license)
 
 ---
@@ -372,45 +373,100 @@ last_detection_state         # Previous detection state
 ## 📁 Project Structure
 
 ```
-🐘 elephant-detection-system/
-├── 🚀 run_advanced.bat              # Advanced GUI launcher
-├── 🚀 run_simple.bat                # Simple GUI launcher
-├── 🐍 launch_advanced_gui.py        # Advanced GUI launcher (Python)
-├── 🐍 launch_gui.py                 # Simple GUI launcher (Python)
-├── 📋 requirements.txt              # Python dependencies
+🐘 elephant-detection-system-using-infrasound-vibrations/
+├── � README.md                     # Main project documentation
 ├── 📄 LICENSE                       # MIT License
-├── 📖 README.md                     # This comprehensive guide
-├── 📖 SETUP.md                      # Detailed setup instructions
+├── � requirements.txt              # Python dependencies
 │
-├── 📁 esp32_firmware/               # ESP32 source code
-│   ├── 📄 platformio.ini            # Build configuration
-│   ├── 📁 src/
-│   │   └── 🔧 main.cpp              # Main firmware logic
-│   └── 📁 lib/                      # Custom libraries
-│       ├── 📁 AudioProcessor/       # Audio processing engine
-│       ├── 📁 KNNClassifier/        # ML classifier
-│       └── 📁 SerialProtocol/       # USB communication
+├── 🚀 **Launchers**
+│   ├── run_advanced.bat             # Advanced GUI launcher (Windows)
+│   ├── run_simple.bat               # Simple GUI launcher (Windows)
+│   ├── run_data_analysis.bat        # Data analysis tool launcher
+│   ├── launch_advanced_gui.py       # Advanced GUI launcher (Python)
+│   └── launch_gui.py                # Simple GUI launcher (Python)
 │
-├── 📁 python_gui/                   # GUI applications
-│   ├── 🖼️ simple_elephant_gui.py    # Clean, simple interface
-│   ├── 📊 advanced_elephant_gui.py  # Full-featured interface
-│   └── 🔧 __init__.py               # Package initialization
+├── � **ESP32 Firmware**
+│   └── esp32_firmware/
+│       ├── platformio.ini           # Build configuration
+│       └── src/main.cpp             # Main firmware logic
 │
-├── 📁 .github/                      # GitHub configuration
-│   └── 📄 copilot-instructions.md   # AI assistant instructions
+├── �️ **Python GUI Applications**
+│   └── python_gui/
+│       ├── simple_elephant_gui.py   # Clean, user-friendly interface
+│       └── advanced_elephant_gui.py # Full-featured interface with plots
 │
-└── 🧪 test_*.py                     # Testing and validation scripts
-    ├── test_all_fixes.py            # Comprehensive system test
-    ├── test_detection_logic.py      # Detection timer validation
-    └── test_gui_detection.py        # GUI testing instructions
+├── 📚 **Documentation**
+│   └── docs/
+│       ├── SETUP.md                 # Detailed setup instructions
+│       ├── DATA_ANALYSIS_GUIDE.md   # Data analysis tool guide
+│       ├── TECHNICAL_DEEP_DIVE.md   # Feature extraction & ML algorithms
+│       ├── FUTURE_DEVELOPMENT_ROADMAP.md # Development roadmap
+│       └── PROJECT_STRUCTURE.md     # Repository organization guide
+│
+├── � **Tools & Utilities**
+│   └── tools/
+│       ├── data_analyzer.py         # Comprehensive data analysis tool
+│       ├── generate_sample_data.py  # Sample data generator
+│       └── data_analysis_requirements.txt # Analysis tool dependencies
+│
+└── 🧪 **Testing**
+    └── tests/
+        ├── test_all_fixes.py        # Comprehensive system tests
+        ├── test_detection_logic.py  # Detection timer validation
+        └── test_gui_detection.py    # GUI testing instructions
 ```
 
 ### 📊 **File Size Overview**
-- **Total Project**: ~2MB
+- **Total Project**: ~5MB (including comprehensive documentation)
 - **ESP32 Firmware**: ~350KB compiled
 - **Python GUI**: ~50KB source
-- **Documentation**: ~100KB
+- **Documentation**: ~500KB (comprehensive guides)
+- **Tools**: ~150KB analysis and utilities
 - **Dependencies**: Managed automatically
+
+---
+
+## 📚 Additional Documentation
+
+The project includes comprehensive technical documentation in the `docs/` directory:
+
+### 🔧 **Technical Deep Dive**
+**[`docs/TECHNICAL_DEEP_DIVE.md`](docs/TECHNICAL_DEEP_DIVE.md)** - Comprehensive explanation of:
+- **Feature Extraction Algorithms**: Mathematical foundations of all 8 audio features
+- **Machine Learning Implementation**: k-NN classifier architecture and training
+- **Signal Processing Pipeline**: From microphone to classification
+- **Performance Analysis**: Validation metrics and accuracy assessments
+- **Real-time Processing**: Timing, memory management, and optimization
+
+### 🚀 **Future Development Roadmap** 
+**[`docs/FUTURE_DEVELOPMENT_ROADMAP.md`](docs/FUTURE_DEVELOPMENT_ROADMAP.md)** - Strategic development plan:
+- **Phase 1-4 Evolution**: From prototype to global platform
+- **Advanced ML Integration**: CNN, RNN, and ensemble methods
+- **Hardware Enhancements**: Multi-sensor fusion and mesh networking
+- **Cloud Analytics Platform**: Big data processing and predictive analytics
+- **Commercial Strategy**: Funding, partnerships, and scaling plans
+
+### 📊 **Data Analysis Guide**
+**[`docs/DATA_ANALYSIS_GUIDE.md`](docs/DATA_ANALYSIS_GUIDE.md)** - Complete analysis toolkit:
+- **PCA Visualization**: Principal component analysis of audio features
+- **Time-series Analysis**: Feature evolution and detection patterns  
+- **Statistical Analysis**: Comprehensive feature statistics and distributions
+- **Correlation Analysis**: Feature relationships and dependencies
+- **Usage Instructions**: Step-by-step analysis procedures
+
+### 🏗️ **Setup & Installation**
+**[`docs/SETUP.md`](docs/SETUP.md)** - Detailed setup instructions:
+- **Hardware Assembly**: ESP32 and microphone configuration
+- **Software Installation**: Step-by-step setup for all platforms
+- **Troubleshooting**: Common issues and solutions
+- **Advanced Configuration**: Custom settings and optimization
+
+### 📁 **Project Organization**
+**[`docs/PROJECT_STRUCTURE.md`](docs/PROJECT_STRUCTURE.md)** - Repository organization:
+- **Directory Structure**: Clean, professional file organization
+- **File Inventory**: Complete listing of all project files
+- **Development Workflow**: How to work with the organized structure
+- **Migration Notes**: Changes from previous organization
 
 ---
 

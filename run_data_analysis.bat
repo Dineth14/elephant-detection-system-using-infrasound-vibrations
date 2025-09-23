@@ -39,7 +39,7 @@ echo Starting Data Analysis Tool...
 echo.
 
 REM Run the data analyzer
-python data_analyzer.py %*
+python tools\data_analyzer.py %*
 
 echo.
 echo Analysis completed! Check the 'analysis_results' folder for outputs.

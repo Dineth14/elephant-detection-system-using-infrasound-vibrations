@@ -1,4 +1,3 @@
-#!/usr/bin/env python3
 """
 Simple Elephant Detection GUI
 A clean, easy-to-use interface for the ESP32 Elephant Detection System
@@ -34,6 +33,16 @@ class SimpleElephantGUI:
         self.current_classification = "not_elephant"
         self.current_confidence = 0.0
         self.feature_history = []
+        
+        # Statistics tracking
+        self.stats = {
+            'elephant_samples': 0,
+            'other_samples': 0,
+            'elephant_detections': 0
+        }
+        
+        # ESP32 stored sample count
+        self.esp32_stored_samples = 0
         
         # Detection display timer (5-second intervals)
         self.detection_timer_start = 0
@@ -78,13 +87,14 @@ class SimpleElephantGUI:
                                  font=('Arial', 12), fg='#cccccc', bg='#2b2b2b')
         subtitle_label.pack()
         
-        # Connection panel
+        # Connection panel  
         self.setup_connection_panel(scrollable_frame)
         
-        # Detection panel
-        self.setup_detection_panel(scrollable_frame)
+        # Statistics panel
+        self.setup_statistics_panel(scrollable_frame)
         
-        # Features panel
+        # Detection panel
+        self.setup_detection_panel(scrollable_frame)        # Features panel
         self.setup_features_panel(scrollable_frame)
         
         # Control panel
@@ -117,6 +127,16 @@ class SimpleElephantGUI:
                                        font=('Arial', 10, 'bold'), bg='#f44336', fg='white',
                                        padx=20, pady=5, state='disabled')
         self.disconnect_btn.pack(side='left', padx=5)
+    
+    def setup_statistics_panel(self, parent):
+        """Setup statistics display"""
+        stats_frame = tk.LabelFrame(parent, text="📊 Sample Statistics", 
+                                   font=('Arial', 12, 'bold'), fg='white', bg='#2b2b2b')
+        stats_frame.pack(fill='x', padx=20, pady=10)
+        
+        self.stats_label = tk.Label(stats_frame, text="Session Labels - Elephant: 0 | Other: 0 | Live Detections: 0 | ESP32 Stored: 0", 
+                                   font=('Arial', 10, 'bold'), fg='#4ECDC4', bg='#2b2b2b', wraplength=800)
+        self.stats_label.pack(pady=10)
     
     def setup_detection_panel(self, parent):
         """Setup detection display"""
@@ -350,6 +370,11 @@ class SimpleElephantGUI:
         except Exception as e:
             self.log_message(f"❌ Disconnect error: {str(e)}")
     
+    def update_statistics_display(self):
+        """Update the statistics label"""
+        stats_text = f"Session Labels - Elephant: {self.elephant_samples} | Other: {self.other_samples} | Live Detections: {self.live_detections} | ESP32 Stored: {self.esp32_stored_samples}"
+        self.stats_label.config(text=stats_text)
+    
     def read_serial_data(self):
         """Read data from ESP32 in background thread"""
         while self.connected and self.serial_connection and self.serial_connection.is_open:
@@ -428,6 +453,12 @@ class SimpleElephantGUI:
             if len(parts) >= 2:  # Changed from >= 3 to >= 2
                 self.current_classification = parts[0].strip()
                 self.current_confidence = float(parts[1].strip())
+                
+                # Increment live detections counter only for 100% confidence elephant classifications
+                if self.current_classification == "elephant" and self.current_confidence == 1.0:
+                    self.live_detections += 1
+                    self.update_statistics_display()
+                
                 self.log_message(f"📊 Classification: {self.current_classification}, Confidence: {self.current_confidence}")
                 self.update_detection_display()
             else:
@@ -443,6 +474,10 @@ class SimpleElephantGUI:
                 sample_count = parts[0]
                 uptime_ms = int(parts[1])
                 free_memory = parts[2]
+                
+                # Store ESP32's sample count and update display
+                self.esp32_stored_samples = int(sample_count)
+                self.update_statistics_display()
                 
                 uptime_sec = uptime_ms // 1000
                 uptime_str = f"{uptime_sec // 60}:{uptime_sec % 60:02d}"
@@ -465,14 +500,9 @@ class SimpleElephantGUI:
         """Update the detection display with 5-second persistence"""
         current_time = time.time()
         
-        # Determine current detection state
-        if self.current_classification == "elephant":
-            if self.current_confidence > 0.5:  # Lowered threshold for better detection
-                new_detection_state = "elephant_high"
-            elif self.current_confidence > 0.3:
-                new_detection_state = "elephant_medium"
-            else:
-                new_detection_state = "elephant_low"
+        # Determine current detection state (only 100% confidence shows elephant detection)
+        if self.current_classification == "elephant" and self.current_confidence == 1.0:
+            new_detection_state = "elephant_high"
         else:
             new_detection_state = "no_elephant"
         
@@ -488,12 +518,6 @@ class SimpleElephantGUI:
                 self.detection_label.config(text="🐘 ELEPHANT DETECTED! 🚨", 
                                           bg='#f44336', fg='white')
                 self.root.bell()  # Sound alert
-            elif new_detection_state == "elephant_medium":
-                self.detection_label.config(text="🐘 Possible Elephant", 
-                                          bg='#FF9800', fg='white')
-            else:
-                self.detection_label.config(text="🤔 Elephant (Low Confidence)", 
-                                          bg='#607D8B', fg='white')
         
         # Check if 5-second period has elapsed
         elif self.detection_locked:
@@ -533,6 +557,16 @@ class SimpleElephantGUI:
         if self.connected:
             try:
                 self.serial_connection.write(f"LABEL:{label}\n".encode())
+                
+                # Update counters based on label
+                if label == "elephant":
+                    self.elephant_samples += 1
+                else:
+                    self.other_samples += 1
+                
+                # Update statistics display
+                self.update_statistics_display()
+                
                 self.log_message(f"📝 Labeled as: {label}")
             except Exception as e:
                 self.log_message(f"❌ Label send error: {str(e)}")
